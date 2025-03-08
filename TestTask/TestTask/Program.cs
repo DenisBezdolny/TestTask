@@ -2,6 +2,9 @@ using TestTask.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Serilog logging
+builder.ConfigureSerilog();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
