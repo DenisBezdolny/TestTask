@@ -2,7 +2,7 @@
 
 namespace TestTask.Domain.Interfaces.Fabrics
 {
-    public interface IEmployeeFacrory
+    public interface IEmployeeFactory
     {
         Employee CreateEmployee(
             string payrollNumber,
