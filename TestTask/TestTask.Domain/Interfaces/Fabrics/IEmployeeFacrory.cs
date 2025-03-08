@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TestTask.Domain.Entities;
 
 namespace TestTask.Domain.Interfaces.Fabrics
 {
-    internal interface IEmployeeFacrory
+    public interface IEmployeeFacrory
     {
+        Employee CreateEmployee(
+            string payrollNumber,
+            string forename,
+            string surname,
+            DateTime dateOfBirth,
+            string phoneNumber,
+            string mobilePhoneNumber,
+            string streetAddress,
+            string settlement,
+            string postcode,
+            string email,
+            DateTime startDate);
     }
 }
