@@ -1,8 +1,9 @@
 ﻿using CsvHelper;
-using TestTask.Domain.Interfaces.Fabrics; // Consider renaming to IEmployeeFactory if appropriate
+using TestTask.Domain.Interfaces.Fabrics;
 using TestTask.Domain.Interfaces.Repositories;
 using TestTask.Domain.Interfaces.BLL;
 using TestTask.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace TestTask.BLL.Services
 {
@@ -10,19 +11,28 @@ namespace TestTask.BLL.Services
     {
         private readonly IEmployeeFactory _employeeFactory;
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly ILogger<EmployeeImportService> _logger;
 
-        public EmployeeImportService(IEmployeeFactory employeeFacrory, IRepository<Employee> employeeRepository)
+
+        public EmployeeImportService(IEmployeeFactory employeeFacrory, IRepository<Employee> employeeRepository, ILogger<EmployeeImportService> logger)
         {
             _employeeFactory = employeeFacrory;
             _employeeRepository = employeeRepository;
+            _logger = logger;
         }
 
         public async Task<int> ImportEmployeeAsync(CsvReader csvReader)
         {
             int successCount = 0;
 
-            // Register the mapping if you're not using auto-mapping via attributes:
+            // Register the mapping configuration
             csvReader.Context.RegisterClassMap<EmployeeMap>();
+
+            // Read the header row
+            if (csvReader.Read())
+            {
+                csvReader.ReadHeader();
+            }
 
             while (csvReader.Read())
             {
@@ -47,8 +57,8 @@ namespace TestTask.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    // TODO: Log the exception for debugging purposes.
-                    // Example: _logger.LogError(ex, "Error importing employee record.");
+                    // Log the exception for debugging purposes.
+                    _logger.LogError(ex, "Error importing employee record.");
                 }
             }
 
