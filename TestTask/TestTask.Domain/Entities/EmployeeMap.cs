@@ -4,7 +4,7 @@ namespace TestTask.Domain.Entities
 {
     public sealed class EmployeeMap : ClassMap<Employee>
     {
-        public EmployeeMap() 
+        public EmployeeMap()
         {
             Map(m => m.PayrollNumber).Name("Personnel_Records.Payroll_Number");
             Map(m => m.Forename).Name("Personnel_Records.Forenames");
