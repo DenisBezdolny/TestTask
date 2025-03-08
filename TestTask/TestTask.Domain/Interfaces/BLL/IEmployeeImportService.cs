@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CsvHelper;
 
 namespace TestTask.Domain.Interfaces.BLL
 {
-    internal interface IEmployeeImportService
+    public interface IEmployeeImportService
     {
+        Task<int> ImportEmployeeAsync(CsvReader csvReader);
     }
 }
