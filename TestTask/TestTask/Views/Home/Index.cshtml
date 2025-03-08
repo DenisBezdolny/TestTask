@@ -1,8 +1,212 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model TestTask.Models.EmployeeImportViewModel
+@{
+    ViewData["Title"] = "Employee Import";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid my-4">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-info">
+            @Model.Message
+        </div>
+    }
+
+    <!-- Form for CSV file upload -->
+    <form asp-action="ImportFile" method="post" enctype="multipart/form-data" class="mb-4">
+        <div class="form-group">
+            <label for="csvFile">Select CSV file:</label>
+            <input type="file" name="csvFile" id="csvFile" class="form-control" accept=".csv" />
+        </div>
+        <button type="submit" class="btn btn-primary">Import</button>
+    </form>
+
+    <hr />
+
+    <!-- Responsive table container -->
+    <div class="table-responsive">
+        <table class="table table-striped w-100" id="employeesTable">
+            <thead>
+                <tr>
+                    <th>Payroll Number</th>
+                    <th>Forename</th>
+                    <th>Surname</th>
+                    <th>Date of Birth</th>
+                    <th>Telephone</th>
+                    <th>Mobile Phone</th>
+                    <th>Street Address</th>
+                    <th>Settlement</th>
+                    <th>Postcode</th>
+                    <th>Email</th>
+                    <th>Start Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model.Employees)
+                {
+                    <tr data-id="@employee.Id"
+                        data-payroll="@employee.PayrollNumber"
+                        data-forename="@employee.Forename"
+                        data-surname="@employee.Surname"
+                        data-dob="@employee.DateOfBirth.ToString("yyyy-MM-dd")"
+                        data-telephone="@employee.PhoneNumber"
+                        data-mobile="@employee.MobilePhoneNumber"
+                        data-street="@employee.StreetAddress"
+                        data-settlement="@employee.Settlement"
+                        data-postcode="@employee.Postcode"
+                        data-email="@employee.Email"
+                        data-startdate="@employee.StartDate.ToString("yyyy-MM-dd")">
+                        <td>@employee.PayrollNumber</td>
+                        <td>@employee.Forename</td>
+                        <td>@employee.Surname</td>
+                        <td>@employee.DateOfBirth.ToShortDateString()</td>
+                        <td>@employee.PhoneNumber</td>
+                        <td>@employee.MobilePhoneNumber</td>
+                        <td>@employee.StreetAddress</td>
+                        <td>@employee.Settlement</td>
+                        <td>@employee.Postcode</td>
+                        <td>@employee.Email</td>
+                        <td>@employee.StartDate.ToShortDateString()</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-secondary edit-btn">Edit</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<!-- Modal for editing an employee -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="editEmployeeForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Employee</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#editEmployeeModal').modal('hide');">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hidden field for the employee ID -->
+                    <input type="hidden" id="employeeId" name="Id" />
+                    <div class="form-group">
+                        <label for="editPayrollNumber">Payroll Number</label>
+                        <input type="text" class="form-control" id="editPayrollNumber" name="PayrollNumber" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editForename">Forename</label>
+                        <input type="text" class="form-control" id="editForename" name="Forename" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editSurname">Surname</label>
+                        <input type="text" class="form-control" id="editSurname" name="Surname" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editDob">Date of Birth</label>
+                        <input type="date" class="form-control" id="editDob" name="DateOfBirth" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editTelephone">Telephone</label>
+                        <input type="text" class="form-control" id="editTelephone" name="PhoneNumber" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editMobile">Mobile Phone</label>
+                        <input type="text" class="form-control" id="editMobile" name="MobilePhoneNumber" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editStreet">Street Address</label>
+                        <input type="text" class="form-control" id="editStreet" name="StreetAddress" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editSettlement">Settlement</label>
+                        <input type="text" class="form-control" id="editSettlement" name="Settlement" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editPostcode">Postcode</label>
+                        <input type="text" class="form-control" id="editPostcode" name="Postcode" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="Email" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editStartDate">Start Date</label>
+                        <input type="date" class="form-control" id="editStartDate" name="StartDate" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#editEmployeeModal').modal('hide');">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable with responsive option.
+            var table = $('#employeesTable').DataTable({
+                order: [[2, "asc"]],
+                responsive: true,
+                autoWidth: false
+            });
+
+            // When an Edit button is clicked, populate and show the modal.
+            $('#employeesTable').on('click', '.edit-btn', function () {
+                var $tr = $(this).closest('tr');
+                $('#employeeId').val($tr.data('id'));
+                $('#editPayrollNumber').val($tr.data('payroll'));
+                $('#editForename').val($tr.data('forename'));
+                $('#editSurname').val($tr.data('surname'));
+                $('#editDob').val($tr.data('dob'));
+                $('#editTelephone').val($tr.data('telephone'));
+                $('#editMobile').val($tr.data('mobile'));
+                $('#editStreet').val($tr.data('street'));
+                $('#editSettlement').val($tr.data('settlement'));
+                $('#editPostcode').val($tr.data('postcode'));
+                $('#editEmail').val($tr.data('email'));
+                $('#editStartDate').val($tr.data('startdate'));
+                $('#editEmployeeModal').modal('show');
+            });
+
+            // Handle the form submission via AJAX.
+            $('#editEmployeeForm').on('submit', function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: '@Url.Action("EditEmployee", "Home")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (data) {
+                        if(data.success) {
+                            $('#editEmployeeModal').modal('hide');
+                            location.reload();
+                        } else {
+                            alert('Error saving changes: ' + data.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Attempt to parse JSON from the response
+                        var response;
+                        try {
+                            response = JSON.parse(xhr.responseText);
+                        } catch (e) {
+                            response = { message: "An unknown error occurred." };
+                        }
+                        alert('Error saving changes: ' + response.message);
+                    }
+                });
+
+            });
+        });
+    </script>
+}

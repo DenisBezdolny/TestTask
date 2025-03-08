@@ -1,22 +1,101 @@
+/* Base typography and layout */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    scroll-behavior: smooth;
+    background: linear-gradient(135deg, #f0f8ff, #e6f7ff);
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: transparent; /* Use the gradient from html */
+    color: #333;
 }
+
+/* Custom button styling */
+.btn {
+    display: inline-block;
+    font-weight: 600;
+    color: #fff;
+    background-color: #258cfb;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .btn:hover {
+        background-color: #1f7ae5;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:focus,
+    .btn:active:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    }
+
+/* Custom file input styling */
+.custom-file-input {
+    border: 2px dashed #ccc;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+}
+
+    .custom-file-input:hover {
+        border-color: #258cfb;
+    }
+
+/* Form group spacing */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Custom table styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+    .table thead {
+        background-color: #258cfb;
+        color: #fff;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem 1rem;
+        border: 1px solid #f0f0f0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+/* Responsive container for the grid */
+.container {
+    max-width: 3000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+

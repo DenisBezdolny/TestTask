@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using TestTask.Extensions;
+using TestTask.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,10 @@ builder.Services.AddControllersWithViews();
 
 // Register services 
 builder.Services.AddApplicationServices();
+
+builder.Services.AddDbContext<TestTaskDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
