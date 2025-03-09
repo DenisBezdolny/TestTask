@@ -11,7 +11,7 @@ namespace TestTask.Infrastructure.Configurations
             // Map to the Employees table
             builder.ToTable("Employees");
 
-            // Primary key configuration. Configure automatic GUID generation if desired
+            // Primary key configuration. Configure automatic GUID generation
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).ValueGeneratedOnAdd();
 

@@ -3,6 +3,7 @@ using TestTask.Domain.Interfaces.Fabrics;
 
 namespace TestTask.BLL.Factories
 {
+    // Implements IEmployeeFactory to create Employee domain objects.
     public class EmployeeFactory : IEmployeeFactory
     {
         public Employee CreateEmployee(

@@ -7,7 +7,6 @@ using TestTask.Domain.Interfaces.BLL;
 using TestTask.Domain.Interfaces.Fabrics;
 using TestTask.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 
 namespace TestTask.BLL.Services
 {
@@ -78,11 +77,12 @@ namespace TestTask.BLL.Services
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
                 {
-                    // If the inner exception is a PostgresException, it might have details about the column.
-                    if (dbEx.InnerException is Npgsql.PostgresException pgEx)
+                    // Catching Db inner exeption
+                    if (dbEx.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx)
                     {
-                        _logger.LogError(dbEx, "Error saving employee record. The column '{ColumnName}' is null. Detail: {Detail}",
-                            pgEx.ColumnName, pgEx.Detail);
+                        var firstError = sqlEx.Errors[0];
+                        _logger.LogError(dbEx, "Error saving employee record. Error Number: {ErrorNumber}, Message: {ErrorMessage}",
+                            firstError.Number, firstError.Message);
                     }
                     else
                     {
@@ -94,10 +94,13 @@ namespace TestTask.BLL.Services
             return successCount;
         }
 
+        // Creates and configures a CsvReader for parsing CSV data into EmployeeImportDto objects.
         private CsvReader CreateCsvReader(string csvData)
         {
             var reader = new StringReader(csvData);
             var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+
+            // Register the class map that defines how CSV columns map to EmployeeImportDto properties.
             csv.Context.RegisterClassMap<EmployeeImportDtoMap>();
             return csv;
         }

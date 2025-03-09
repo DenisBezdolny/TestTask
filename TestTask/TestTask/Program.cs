@@ -14,7 +14,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddApplicationServices();
 
 builder.Services.AddDbContext<TestTaskDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();

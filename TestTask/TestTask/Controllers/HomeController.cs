@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TestTask.Domain.Entities;
 using TestTask.Domain.Interfaces.BLL;
 using TestTask.Domain.Interfaces.Repositories;
@@ -10,11 +13,16 @@ namespace TestTask.Controllers
     {
         private readonly IEmployeeImportService _employeeImportService;
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IEmployeeImportService employeeImportService, IRepository<Employee> employeeRepository)
+        public HomeController(
+            IEmployeeImportService employeeImportService,
+            IRepository<Employee> employeeRepository,
+            ILogger<HomeController> logger)
         {
             _employeeImportService = employeeImportService;
             _employeeRepository = employeeRepository;
+            _logger = logger;
         }
 
         // GET: Home/Index
@@ -63,20 +71,41 @@ namespace TestTask.Controllers
                 await _employeeRepository.UpdateAsync(employee);
                 return Json(new { success = true });
             }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            catch (DbUpdateException dbEx)
             {
                 string errorDetail = "Error saving changes.";
-                if (dbEx.InnerException is Npgsql.PostgresException pgEx)
+                if (dbEx.InnerException is SqlException sqlEx)
                 {
-                    // Extract the column name and details from the Postgres exception
-                    errorDetail = $"Error: The field '{pgEx.ColumnName}' is missing or invalid."; 
+                    // Take the first error in the collection.
+                    var firstError = sqlEx.Errors[0];
+                    // Use a simple approach to extract the column name from the error message.
+                    string message = firstError.Message;
+                    string columnName = "";
+                    int startIndex = message.IndexOf("column '");
+                    if (startIndex != -1)
+                    {
+                        startIndex += "column '".Length;
+                        int endIndex = message.IndexOf("'", startIndex);
+                        if (endIndex != -1)
+                        {
+                            columnName = message.Substring(startIndex, endIndex - startIndex);
+                        }
+                    }
+
+                    errorDetail = $"Error saving changes.The column '{columnName}' is missing or invalid.";
+                    _logger.LogError(dbEx, "Detailed SQL error: Error Number: {ErrorNumber}, Extracted Column: {ColumnName}, Message: {ErrorMessage}",
+                        firstError.Number, columnName, firstError.Message);
                 }
-                // Return a JSON error response 
+                else
+                {
+                    _logger.LogError(dbEx, "Error saving employee record.");
+                }
                 Response.StatusCode = 500;
                 return Json(new { success = false, message = errorDetail });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An unexpected error occurred while saving changes.");
                 Response.StatusCode = 500;
                 return Json(new { success = false, message = "An unexpected error occurred while saving changes." });
             }

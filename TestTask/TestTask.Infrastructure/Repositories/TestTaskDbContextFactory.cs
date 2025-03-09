@@ -17,7 +17,7 @@ namespace TestTask.Infrastructure.Repositories
             var optionsBuilder = new DbContextOptionsBuilder<TestTaskDbContext>();
 
             // Configure the DbContext to use PostgreSQL, using the connection string from configuration.
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 
             // Return a new instance of TaskDBContext with the configured options.
             return new TestTaskDbContext(optionsBuilder.Options);
