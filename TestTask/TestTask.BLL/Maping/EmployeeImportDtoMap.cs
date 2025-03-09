@@ -3,6 +3,7 @@ using TestTask.BLL.DTOs;
 
 namespace TestTask.BLL.Mappings
 {
+    // Defines the mapping between CSV columns and the EmployeeImportDto properties.
     public sealed class EmployeeImportDtoMap : ClassMap<EmployeeImportDto>
     {
         public EmployeeImportDtoMap()

@@ -1,5 +1,6 @@
 ﻿namespace TestTask.BLL.DTOs
 {
+    // DTO used to import employee data from a CSV file.
     public class EmployeeImportDto
     {
         public string PayrollNumber { get; set; }
